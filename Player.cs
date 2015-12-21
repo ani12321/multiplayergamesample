@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Multiplayer_Game_Sample
 {
@@ -32,12 +33,33 @@ namespace Multiplayer_Game_Sample
 
         public void Draw(Graphics g)
         {
-            Pen pen = new Pen(color);
-            var rect = new Rectangle(x, y, width, height);
-            g.DrawRectangle(pen, rect);
-            
+            Brush col = new SolidBrush(color);
+            var rect = new RectangleF(x, y, width, height);
+            g.FillRectangle(col, rect);
+
+            g.DrawString(id.ToString(),Constants.FONT, Brushes.White, new PointF(x, y));
         }
 
+        public void Input(Keys key)
+        {
+
+            switch (key)
+            {
+                case Keys.Up:
+                    y -= Constants.SPEED;
+                    break;
+                case Keys.Down:
+                    y += Constants.SPEED;
+                    break;
+                case Keys.Left:
+                    x -= Constants.SPEED;
+                    break;
+                case Keys.Right:
+                    x += Constants.SPEED;
+                    break;
+
+            }
+        }
 
     }
 }
