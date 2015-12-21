@@ -42,6 +42,8 @@ namespace Multiplayer_Game_Sample
 
         public void Input(Keys key)
         {
+            NetworkService service = new NetworkService();
+            service.ClientSend();
 
             switch (key)
             {
