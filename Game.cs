@@ -17,12 +17,9 @@ namespace Multiplayer_Game_Sample
         Stopwatch timer = new Stopwatch();
         long interval = (long)TimeSpan.FromSeconds(1.0 / 30).TotalMilliseconds;
         long startTime;
-
-        Graphics graphics, imgGraphics;
-
+        
         int width, height;
-
-        bool started = false;
+        
 
         List<Player> players = new List<Player>();
 
@@ -30,17 +27,22 @@ namespace Multiplayer_Game_Sample
         public Game()
         {
             InitializeComponent();
+            this.Paint += new PaintEventHandler(this.Draw);
+        }
 
+        public void Start()
+        {
             this.DoubleBuffered = true;
             this.MaximizeBox = false;
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.width = this.ClientRectangle.Width;
             this.height = this.ClientRectangle.Height;
-
-            graphics = this.CreateGraphics();
+            
 
             Player p = new Player();
             players.Add(p);
+
+            Loop();
         }
 
 
@@ -52,27 +54,29 @@ namespace Multiplayer_Game_Sample
             {
                 startTime = timer.ElapsedMilliseconds;
                 Update();
-                Draw();
-                while (timer.ElapsedMilliseconds - startTime < interval) ;
+
                 Application.DoEvents();
-                started = true;
+                while (timer.ElapsedMilliseconds - startTime < interval);
             }
         }
         
+
         public void Update()
         {
-
+            foreach (var player in players)
+                player.Update();
         }
 
-        public void Draw()
+        public void Draw(object sender, PaintEventArgs e)
         {
-            graphics.Clear(Color.White);
 
-            foreach(var player in players)
-                player.Draw(graphics);
-            
-    
+            e.Graphics.Clear(Color.White);
+            foreach (var player in players)
+                player.Draw(e.Graphics);
+
             this.Invalidate();
+            this.Update();
+
         }
 
 

@@ -24,14 +24,18 @@ namespace Multiplayer_Game_Sample
         }
 
 
+        public void Update()
+        {
+
+        }
+
+
         public void Draw(Graphics g)
         {
             Pen pen = new Pen(color);
-
             var rect = new Rectangle(x, y, width, height);
-
             g.DrawRectangle(pen, rect);
-
+            
         }
 
 

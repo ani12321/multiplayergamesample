@@ -18,7 +18,7 @@ namespace Multiplayer_Game_Sample
             Application.SetCompatibleTextRenderingDefault(false);
             var game = new Game();
             game.Show();
-            game.Loop();
+            game.Start();
 
             //Application.Run(game);
             
