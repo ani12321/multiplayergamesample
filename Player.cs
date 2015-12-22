@@ -16,12 +16,14 @@ namespace Multiplayer_Game_Sample
         public int x, y;
         public const int width = 32, height = 32;
 
+        public NetworkService service = new NetworkService();
 
         public Player()
         {
             color = Color.Black;
             x = 0;
             y = 0;
+            
         }
 
 
@@ -42,9 +44,8 @@ namespace Multiplayer_Game_Sample
 
         public void Input(Keys key)
         {
-            NetworkService service = new NetworkService();
             service.ClientSend();
-
+            //service.ClientSend();
             switch (key)
             {
                 case Keys.Up:

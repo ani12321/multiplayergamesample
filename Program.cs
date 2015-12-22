@@ -19,8 +19,7 @@ namespace Multiplayer_Game_Sample
             var game = new Game();
             game.Show();
             game.Start();
-
-            //Application.Run(game);
+            
             
         }
     }

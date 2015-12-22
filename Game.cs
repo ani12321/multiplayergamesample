@@ -55,8 +55,8 @@ namespace Multiplayer_Game_Sample
                 if (CurrentPlayer == null)
                     CurrentPlayer = p;
             }
-            
 
+            PlayerServer.service.StartServer();
             Loop();
         }
 
