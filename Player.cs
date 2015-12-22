@@ -44,8 +44,6 @@ namespace Multiplayer_Game_Sample
 
         public void Input(Keys key)
         {
-            service.ClientSend();
-            //service.ClientSend();
             switch (key)
             {
                 case Keys.Up:
@@ -62,6 +60,11 @@ namespace Multiplayer_Game_Sample
                     break;
 
             }
+            Point pos = new Point();
+            pos.X = x;
+            pos.Y = y;
+            service.ClientSend(Messages.POSITION, pos);
+
         }
 
     }

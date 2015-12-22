@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,9 +20,7 @@ namespace Multiplayer_Game_Sample
             serverThread = new Thread(() => {
 
 
-                Byte[] bytes = new Byte[Constants.BUFFER_SIZE];
-                string data = null;
-
+                BinaryFormatter formatter = new BinaryFormatter();
                 var localAddr = IPAddress.Parse(Constants.ADDRESS);
 
                 try
@@ -33,27 +33,31 @@ namespace Multiplayer_Game_Sample
                     while (true)
                     {
                         TcpClient client = serverSocket.AcceptTcpClient();
-                        data = null;
-
                         NetworkStream stream = client.GetStream();
-                        int i;
-                        do
+
+                        //message:
+                        //1 byte - Messages
+                        //the rest - object
+
+                        //Read message type
+                        byte[] buffer = new byte[1];
+                        stream.Read(buffer, 0, 1);
+                        Messages messageType = (Messages)buffer[0];
+
+                        switch(messageType)
                         {
-                            //read from stream
-                            i = stream.Read(bytes, 0, bytes.Length);
-
-                            //convert to ASCII
-                            data = Encoding.ASCII.GetString(bytes, 0, i);
-                            data = data.ToUpper();
-                            Console.WriteLine("Server got: " + data);
-
-                            byte[] msg = System.Text.Encoding.ASCII.GetBytes("return");
-                            stream.Write(msg, 0, msg.Length);
+                            case Messages.POSITION:
+                                Point pos = (Point)formatter.Deserialize(stream);
+                                Console.WriteLine("Server got: " + pos.X);
+                                
+                                break;
+                           
                         }
 
-                        while (i != 0);
+                        //write response
+                        byte[] msg = System.Text.Encoding.ASCII.GetBytes("1");
+                        stream.Write(msg, 0, msg.Length);
 
-                        Console.Write(data);
                         client.Close();
                         stream.Close();
                     }
@@ -77,7 +81,7 @@ namespace Multiplayer_Game_Sample
             serverThread.Start();
         }
 
-        public void ClientSend()
+        public void ClientSend(Messages mType,object obj)
         {
             clientThread = new Thread(() =>
             {
@@ -87,17 +91,22 @@ namespace Multiplayer_Game_Sample
                 try
                 {
                     client = new TcpClient(Constants.ADDRESS, Constants.PORT);
-
-                    Byte[] data = System.Text.Encoding.ASCII.GetBytes("Hello World");
-
+                    BinaryFormatter formatter = new BinaryFormatter();
                     stream = client.GetStream();
-                    stream.Write(data, 0, data.Length);
 
+                    //send message type - 1 byte
+                    byte[] buffer = { (byte)mType };
+                    stream.Write(buffer, 0, buffer.Length);
+
+                    //send serialized object
+                    formatter.Serialize(stream, obj);//send to stream as binary data
+                    
 
                     //response
+                    Byte[] data;
                     data = new Byte[Constants.BUFFER_SIZE];
                     stream.Read(data, 0, data.Length);
-
+                    
                     Console.WriteLine("Client got: " + Encoding.ASCII.GetString(data));
 
                     stream.Close();
